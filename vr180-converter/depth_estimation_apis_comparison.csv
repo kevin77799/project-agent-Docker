@@ -1,0 +1,8 @@
+Model/API,Platform,Model Size,Processing Speed,Accuracy,Best Use Case,License,Hardware Requirements
+TensorFlow.js Portrait Depth,Browser (JavaScript),~30MB,Fast (Browser),Good for portraits,Browser-based apps,Apache 2.0,CPU/GPU (WebGL)
+Apple Depth Pro,Cross-platform,1.9GB,0.3s per frame,High metric accuracy,High-quality conversion,Research/Commercial,GPU recommended
+Depth Anything V2,Python/GPU,1.3GB (Giant),Medium-Fast,Excellent detail,Detailed depth maps,Apache 2.0,GPU required
+MiDaS DPT-Large,Python/Cross-platform,1.3GB,Medium,Good general purpose,General purpose,MIT,CPU/GPU
+Marigold,Python/Hugging Face,167-300MB,Fast,High quality,Custom training,Open Source,CPU/GPU
+Metric3D,Python/Research,150MB-1.65GB,Medium,Metric accuracy,Measured depth,Research,GPU recommended
+Google ARCore Depth,Android/Mobile,Built-in SDK,Real-time,Good for AR,Mobile AR apps,Commercial (Google),Mobile device

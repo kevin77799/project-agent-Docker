@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VR 180 Converter - Transform 2D Videos into Immersive VR Experiences</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <i class="fas fa-vr-cardboard logo-icon"></i>
+                    <div class="logo-text">
+                        <h1>VR 180 Converter</h1>
+                        <p>Transform 2D Videos into Immersive VR Experiences</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn--outline btn--sm">
+                        <i class="fas fa-question-circle"></i>
+                        Help
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Main Content -->
+                <div class="main-content">
+                    <!-- Upload Section -->
+                    <section class="section upload-section" id="uploadSection">
+                        <div class="section-header">
+                            <h2><i class="fas fa-upload"></i> Upload Your 2D Video</h2>
+                            <p>Drag and drop your video file or click to browse</p>
+                        </div>
+                        
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <h3>Drop your video here</h3>
+                                <p>or <span class="upload-link">browse files</span></p>
+                                <small>Supports MP4, AVI, MOV • Max 100MB</small>
+                            </div>
+                            <input type="file" id="fileInput" accept=".mp4,.avi,.mov" hidden>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div class="error-message" id="errorMessage">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span id="errorText">Error message will appear here</span>
+                        </div>
+
+                        <!-- File Preview -->
+                        <div class="file-preview" id="filePreview">
+                            <div class="preview-header">
+                                <h3><i class="fas fa-eye"></i> File Preview</h3>
+                                <button class="btn-clear" onclick="app.clearFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="preview-content">
+                                <div class="video-preview">
+                                    <video id="videoPreview" controls muted></video>
+                                </div>
+                                <div class="file-info">
+                                    <div class="info-item">
+                                        <span class="label">Filename:</span>
+                                        <span class="value" id="fileName">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">File Size:</span>
+                                        <span class="value" id="fileSize">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Duration:</span>
+                                        <span class="value" id="fileDuration">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Resolution:</span>
+                                        <span class="value" id="fileResolution">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Processing Section -->
+                    <section class="section processing-section disabled" id="processingSection">
+                        <div class="section-header">
+                            <h2><i class="fas fa-cogs"></i> Processing Options</h2>
+                            <p>Configure settings for VR 180 conversion</p>
+                        </div>
+
+                        <div class="upload-notice" id="uploadNotice">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Please upload a video file first</span>
+                        </div>
+
+                        <div class="processing-options">
+                            <div class="option-group">
+                                <label for="depthModel">Depth Estimation Model</label>
+                                <select id="depthModel" disabled>
+                                    <option value="MiDaS_small">MiDaS Small (Fast)</option>
+                                    <option value="DPT_Hybrid">DPT Hybrid (Balanced)</option>
+                                    <option value="DPT_Large" selected>DPT Large (Best Quality)</option>
+                                </select>
+                            </div>
+
+                            <div class="option-group">
+                                <label for="qualitySettings">Output Quality</label>
+                                <select id="qualitySettings" disabled>
+                                    <option value="720p">720p (Fast Processing)</option>
+                                    <option value="1080p" selected>1080p (Recommended)</option>
+                                    <option value="4k">4K (Best Quality)</option>
+                                </select>
+                            </div>
+
+                            <div class="slider-group">
+                                <label for="depthIntensity">Depth Intensity: <span id="depthValue">0.7</span></label>
+                                <input type="range" id="depthIntensity" min="0.1" max="1.0" step="0.1" value="0.7" disabled>
+                            </div>
+
+                            <div class="slider-group">
+                                <label for="eyeSeparation">Eye Separation: <span id="eyeValue">1.2</span></label>
+                                <input type="range" id="eyeSeparation" min="0.5" max="2.0" step="0.1" value="1.2" disabled>
+                            </div>
+                        </div>
+
+                        <div class="processing-actions">
+                            <button class="btn btn--primary" id="startProcessing" disabled>
+                                <i class="fas fa-play"></i>
+                                Start Conversion
+                            </button>
+                        </div>
+
+                        <!-- Progress Container -->
+                        <div class="progress-container" id="progressContainer" style="display: none;">
+                            <div class="progress-header">
+                                <h3>Converting to VR 180...</h3>
+                                <button class="btn btn--outline btn--sm" id="cancelProcessing">
+                                    <i class="fas fa-times"></i>
+                                    Cancel
+                                </button>
+                            </div>
+
+                            <div class="progress-steps">
+                                <div class="step active" id="step1">
+                                    <div class="step-number">1</div>
+                                    <div class="step-info">
+                                        <div class="step-name">Analyzing</div>
+                                        <div class="step-description">Analyzing video properties</div>
+                                    </div>
+                                </div>
+                                <div class="step" id="step2">
+                                    <div class="step-number">2</div>
+                                    <div class="step-info">
+                                        <div class="step-name">Depth Estimation</div>
+                                        <div class="step-description">Generating depth maps</div>
+                                    </div>
+                                </div>
+                                <div class="step" id="step3">
+                                    <div class="step-number">3</div>
+                                    <div class="step-info">
+                                        <div class="step-name">Stereoscopic Rendering</div>
+                                        <div class="step-description">Creating stereo pairs</div>
+                                    </div>
+                                </div>
+                                <div class="step" id="step4">
+                                    <div class="step-number">4</div>
+                                    <div class="step-info">
+                                        <div class="step-name">Encoding</div>
+                                        <div class="step-description">Encoding VR 180 format</div>
+                                    </div>
+                                </div>
+                                <div class="step" id="step5">
+                                    <div class="step-number">5</div>
+                                    <div class="step-info">
+                                        <div class="step-name">Complete</div>
+                                        <div class="step-description">Processing complete</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            
+                            <div class="progress-info">
+                                <span id="progressPercent">0%</span>
+                                <span id="timeRemaining">Calculating...</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Download Section -->
+                    <section class="section download-section" id="downloadSection" style="display: none;">
+                        <div class="section-header">
+                            <h2><i class="fas fa-download"></i> Download Your VR 180 Video</h2>
+                            <p>Your immersive VR experience is ready!</p>
+                        </div>
+
+                        <div class="success-message">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Conversion completed successfully!</span>
+                        </div>
+
+                        <div class="output-info">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="label">Format:</span>
+                                    <span class="value">VR 180 (Side-by-Side)</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Resolution:</span>
+                                    <span class="value" id="outputResolution">1920x1080</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">File Size:</span>
+                                    <span class="value" id="outputSize">~45MB</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Duration:</span>
+                                    <span class="value" id="outputDuration">2:30</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="download-actions">
+                            <button class="btn btn--primary" id="downloadBtn">
+                                <i class="fas fa-download"></i>
+                                Download VR 180 Video
+                            </button>
+                            <button class="btn btn--outline" id="previewBtn">
+                                <i class="fas fa-eye"></i>
+                                Preview in Browser
+                            </button>
+                        </div>
+
+                        <div class="sharing-options">
+                            <h4>Share Your VR Experience</h4>
+                            <div class="share-buttons">
+                                <button class="btn btn--outline btn--sm">
+                                    <i class="fas fa-link"></i>
+                                    Copy Link
+                                </button>
+                                <button class="btn btn--outline btn--sm">
+                                    <i class="fas fa-share"></i>
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="vr-tips">
+                            <h4>Viewing Tips</h4>
+                            <ul>
+                                <li>Use VR headsets like Meta Quest, Oculus Rift, or HTC Vive for best experience</li>
+                                <li>Compatible with YouTube VR and other VR video players</li>
+                                <li>Can also be viewed on smartphones with VR cardboard</li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="info-panel">
+                        <h3><i class="fas fa-info-circle"></i> About VR 180</h3>
+                        <p>VR 180 creates immersive experiences with 180-degree stereoscopic video that provides depth and presence while maintaining a natural viewing angle.</p>
+                    </div>
+
+                    <div class="tips-panel">
+                        <h3><i class="fas fa-lightbulb"></i> Tips for Best Results</h3>
+                        <ul>
+                            <li>Use high-resolution source videos</li>
+                            <li>Videos with clear depth differences work better</li>
+                            <li>Good lighting and contrast improve depth estimation</li>
+                            <li>Keep videos under 5 minutes for optimal processing</li>
+                        </ul>
+                    </div>
+
+                    <div class="supported-panel">
+                        <h3><i class="fas fa-headset"></i> Supported VR Headsets</h3>
+                        <ul>
+                            <li>Meta Quest 2/3</li>
+                            <li>Oculus Rift</li>
+                            <li>HTC Vive</li>
+                            <li>Pico 4</li>
+                            <li>Apple Vision Pro</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
